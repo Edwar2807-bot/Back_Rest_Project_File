@@ -1,15 +1,97 @@
+using FileReport.RestApi.Application.Interfaces;
+using FileReport.RestApi.Application.Services;
+using FileReport.RestApi.Infrastructure.Minio;
+using FileReport.RestApi.Infrastructure.Security;
+using FileReport.RestApi.Infrastructure.Soap;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// =======================
+// Configuration
+// =======================
+builder.Services.Configure<JwtOptions>(
+    builder.Configuration.GetSection("Jwt"));
 
+// =======================
+// Controllers & Swagger
+// =======================
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "File Report REST API",
+        Version = "v1"
+    });
+
+    // JWT en Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
+// =======================
+// Authentication (JWT)
+// =======================
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var signingKey = jwtSection.GetValue<string>("SigningKey");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSection["Issuer"],
+            ValidAudience = jwtSection["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(signingKey!))
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+// =======================
+// Dependency Injection
+// =======================
+builder.Services.AddScoped<IFileReportSoapClient, FileReportSoapClient>();
+builder.Services.AddScoped<IMinioPresignService, MinioPresignService>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// =======================
+// Pipeline
+// =======================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -18,6 +100,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
