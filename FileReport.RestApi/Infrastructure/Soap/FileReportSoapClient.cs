@@ -1,4 +1,5 @@
 ﻿using FileReport.RestApi.Application.Interfaces;
+using System.ServiceModel;
 
 namespace FileReport.RestApi.Infrastructure.Soap
 {
@@ -8,15 +9,33 @@ namespace FileReport.RestApi.Infrastructure.Soap
 
         public FileReportSoapClient(IConfiguration configuration)
         {
-            _client = new FileReportPortClient(
-                FileReportPortClient.EndpointConfiguration.FileReportPortSoap11,
-                configuration["Soap:Endpoint"]);
+            var binding = new BasicHttpBinding(BasicHttpSecurityMode.None)
+            {
+                SendTimeout = TimeSpan.FromMinutes(3),
+                ReceiveTimeout = TimeSpan.FromMinutes(3),
+                OpenTimeout = TimeSpan.FromSeconds(30),
+                CloseTimeout = TimeSpan.FromSeconds(30),
+                MaxReceivedMessageSize = 10 * 1024 * 1024 // 10 MB
+            };
+
+            var endpoint = new EndpointAddress(configuration["Soap:Endpoint"]);
+
+            _client = new FileReportPortClient(binding, endpoint);
         }
 
         public async Task<FileReportDto> GetFileByUuidAsync(string uuid)
         {
             var response = await _client.GetFileByUuidAsync(
                 new GetFileByUuidRequest { uuid = uuid });
+
+            var f = response.GetFileByUuidResponse.file;
+
+            Console.WriteLine($"fileSize: {f.fileSize}");
+            Console.WriteLine($"fileSizeSpecified: {f.fileSizeSpecified}");
+            Console.WriteLine($"decryptValidationOk: {f.decryptValidationOk}");
+            Console.WriteLine($"decryptValidationOkSpecified: {f.decryptValidationOkSpecified}");
+            Console.WriteLine($"processedAt: {f.processedAt}");
+            Console.WriteLine($"processedAtSpecified: {f.processedAtSpecified}");
 
             return response.GetFileByUuidResponse.file;
         }

@@ -7,12 +7,12 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.ServiceModel;
-
 namespace FileReport.RestApi.Infrastructure.Soap
 {
+    
+    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
-    [ServiceContractAttribute(Namespace="http://project.example.com/file-report/soap", ConfigurationName="FileReport.RestApi.Infrastructure.Soap.FileReportPort")]
+    [System.ServiceModel.ServiceContractAttribute(Namespace="http://project.example.com/file-report/soap", ConfigurationName="FileReport.RestApi.Infrastructure.Soap.FileReportPort")]
     public interface FileReportPort
     {
         
@@ -70,7 +70,7 @@ namespace FileReport.RestApi.Infrastructure.Soap
         
         private string contentTypeField;
         
-        private long fileSizeField;
+        private System.Nullable<long> fileSizeField;
         
         private bool fileSizeFieldSpecified;
         
@@ -82,7 +82,7 @@ namespace FileReport.RestApi.Infrastructure.Soap
         
         private string mimeTypeField;
         
-        private long originalSizeField;
+        private System.Nullable<long> originalSizeField;
         
         private bool originalSizeFieldSpecified;
         
@@ -92,17 +92,31 @@ namespace FileReport.RestApi.Infrastructure.Soap
         
         private string sha256DecryptedField;
         
-        private bool decryptValidationOkField;
+        private System.Nullable<bool> decryptValidationOkField;
         
         private bool decryptValidationOkFieldSpecified;
         
         private string encryptionAlgorithmField;
         
-        private System.DateTime processedAtField;
+        private System.Nullable<System.DateTime> createdAtField;
+        
+        private bool createdAtFieldSpecified;
+        
+        private System.Nullable<System.DateTime> processedAtField;
         
         private bool processedAtFieldSpecified;
         
         private string encryptedAesKeyBase64Field;
+        
+        private string originalNameField;
+        
+        private string usernameField;
+        
+        private string userEmailField;
+        
+        private string userMetadataJsonField;
+        
+        private string ivBase64Field;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Order=0)]
@@ -147,8 +161,8 @@ namespace FileReport.RestApi.Infrastructure.Soap
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=3)]
-        public long fileSize
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=3)]
+        public System.Nullable<long> fileSize
         {
             get
             {
@@ -203,7 +217,7 @@ namespace FileReport.RestApi.Infrastructure.Soap
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=6)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=6)]
         public string errorMessage
         {
             get
@@ -231,8 +245,8 @@ namespace FileReport.RestApi.Infrastructure.Soap
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=8)]
-        public long originalSize
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=8)]
+        public System.Nullable<long> originalSize
         {
             get
             {
@@ -301,8 +315,8 @@ namespace FileReport.RestApi.Infrastructure.Soap
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=12)]
-        public bool decryptValidationOk
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=12)]
+        public System.Nullable<bool> decryptValidationOk
         {
             get
             {
@@ -329,7 +343,7 @@ namespace FileReport.RestApi.Infrastructure.Soap
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=13)]
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=13)]
         public string encryptionAlgorithm
         {
             get
@@ -343,8 +357,36 @@ namespace FileReport.RestApi.Infrastructure.Soap
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=14)]
-        public System.DateTime processedAt
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=14)]
+        public System.Nullable<System.DateTime> createdAt
+        {
+            get
+            {
+                return this.createdAtField;
+            }
+            set
+            {
+                this.createdAtField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool createdAtSpecified
+        {
+            get
+            {
+                return this.createdAtFieldSpecified;
+            }
+            set
+            {
+                this.createdAtFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true, Order=15)]
+        public System.Nullable<System.DateTime> processedAt
         {
             get
             {
@@ -371,7 +413,7 @@ namespace FileReport.RestApi.Infrastructure.Soap
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=15)]
+        [System.Xml.Serialization.XmlElementAttribute(Order=16)]
         public string encryptedAesKeyBase64
         {
             get
@@ -381,6 +423,76 @@ namespace FileReport.RestApi.Infrastructure.Soap
             set
             {
                 this.encryptedAesKeyBase64Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=17)]
+        public string originalName
+        {
+            get
+            {
+                return this.originalNameField;
+            }
+            set
+            {
+                this.originalNameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=18)]
+        public string username
+        {
+            get
+            {
+                return this.usernameField;
+            }
+            set
+            {
+                this.usernameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=19)]
+        public string userEmail
+        {
+            get
+            {
+                return this.userEmailField;
+            }
+            set
+            {
+                this.userEmailField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=20)]
+        public string userMetadataJson
+        {
+            get
+            {
+                return this.userMetadataJsonField;
+            }
+            set
+            {
+                this.userMetadataJsonField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=21)]
+        public string ivBase64
+        {
+            get
+            {
+                return this.ivBase64Field;
+            }
+            set
+            {
+                this.ivBase64Field = value;
             }
         }
     }
@@ -776,7 +888,7 @@ namespace FileReport.RestApi.Infrastructure.Soap
         {
             if ((endpointConfiguration == EndpointConfiguration.FileReportPortSoap11))
             {
-                return new System.ServiceModel.EndpointAddress("http://localhost:8085/ws");
+                return new System.ServiceModel.EndpointAddress("http://localhost:8080/ws");
             }
             throw new System.InvalidOperationException(string.Format("No se pudo encontrar un punto de conexión con el nombre \"{0}\".", endpointConfiguration));
         }

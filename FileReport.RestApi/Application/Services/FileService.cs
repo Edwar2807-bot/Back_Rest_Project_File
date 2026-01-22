@@ -67,14 +67,41 @@ namespace FileReport.RestApi.Application.Services
         private static FileDto MapToDto(FileReportDto file) =>
             new()
             {
+                // Identidad
                 FileId = file.uuid,
                 FileName = file.fileName,
+                OriginalName = file.originalName,
+
+                // Archivo
                 ContentType = file.contentType,
-                FileSize = file.fileSize,
+                FileSize = file.fileSizeSpecified ? file.fileSize : null,
+                MimeType = file.mimeType,
+                OriginalSize = file.originalSizeSpecified ? file.originalSize : null,
+
+                // Usuario
                 UserId = file.userId,
-                ProcessedAt = file.processedAt,
-                DecryptValidationOk = file.decryptValidationOk,
-                EncryptionAlgorithm = file.encryptionAlgorithm
+                Username = file.username,
+                UserEmail = file.userEmail,
+                UserMetadataJson = file.userMetadataJson,
+
+                // Pipeline
+                DecryptValidationOk = file.decryptValidationOkSpecified
+                    ? file.decryptValidationOk
+                    : null,
+                EncryptionAlgorithm = file.encryptionAlgorithm,
+                Sha256Original = file.sha256Original,
+                Sha256Decrypted = file.sha256Decrypted,
+                ProcessedAt = file.processedAtSpecified ? file.processedAt : null,
+
+                // Criptografía / storage
+                IvBase64 = file.ivBase64,
+                EncryptedAesKeyBase64 = file.encryptedAesKeyBase64,
+                UrlFile = file.urlFile,
+
+                // Control
+                Error = file.error,
+                ErrorMessage = file.errorMessage
             };
+
     }
 }
