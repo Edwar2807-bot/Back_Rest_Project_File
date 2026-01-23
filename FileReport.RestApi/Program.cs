@@ -3,6 +3,7 @@ using FileReport.RestApi.Application.Services;
 using FileReport.RestApi.Infrastructure.Minio;
 using FileReport.RestApi.Infrastructure.Security;
 using FileReport.RestApi.Infrastructure.Soap;
+using FileReport.RestApi.Infrastructure.Errors;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -99,6 +100,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Middleware global de manejo de errores
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
