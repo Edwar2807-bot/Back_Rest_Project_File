@@ -55,7 +55,13 @@ namespace FileReport.RestApi.Application.Services
             if (file.error)
                 throw new KeyNotFoundException(file.errorMessage);
 
-            var url = await _minioService.GeneratePresignedDownloadUrlAsync(file.urlFile);
+            var objectPath = encrypted
+                ? $"encrypted/{file.uuid}.enc"
+                : (string.IsNullOrWhiteSpace(file.urlFile)
+                    ? $"original/{file.uuid}.bin"
+                    : file.urlFile);
+
+            var url = await _minioService.GeneratePresignedDownloadUrlAsync(objectPath);
 
             return new DownloadUrlResponseDto
             {
