@@ -122,8 +122,8 @@ El proyecto incluye un archivo `docker-compose.yml` que permite ejecutar **dos i
 
 | Servicio | Puerto Host | Puerto Contenedor | Container Name |
 |----------|-------------|-------------------|----------------|
-| `filereport-api-1` | **8085** | 8080 | filereport-api-8085 |
-| `filereport-api-2` | **8086** | 8080 | filereport-api-8086 |
+| `filereport-api-1` | **8086** | 8080 | filereport-api-8086 |
+| `filereport-api-2` | **8087** | 8080 | filereport-api-8087 |
 
 #### Comandos Docker Compose
 
@@ -145,8 +145,8 @@ docker-compose down -v
 ```
 
 #### Acceso a las APIs
-- **Instancia 1**: `http://localhost:8085/swagger`
-- **Instancia 2**: `http://localhost:8086/swagger`
+- **Instancia 1**: `http://localhost:8086/swagger`
+- **Instancia 2**: `http://localhost:8087/swagger`
 
 #### Variables de entorno configuradas
 Las siguientes variables de entorno sobrescriben la configuración de `appsettings.json`:
@@ -245,7 +245,7 @@ curl -X POST "http://localhost:8080/realms/proyecto-realm/protocol/openid-connec
 
 ```bash
 # Ejemplo de petición autenticada
-curl -X GET "http://localhost:8085/api/v1/files?page=1" \
+curl -X GET "http://localhost:8086/api/v1/files?page=1" \
   -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
