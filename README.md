@@ -28,7 +28,7 @@ Archivo `appsettings.json` (ejemplo mínimo):
     "SigningKey": "clave-secreta-minima"
   },
   "Soap": {
-    "Endpoint": "http://localhost:8080/ws"
+    "Endpoint": "http://localhost:8085/ws"
   },
   "Minio": {
     "Endpoint": "http://localhost:9000",
@@ -155,7 +155,7 @@ Las siguientes variables de entorno sobrescriben la configuración de `appsettin
 environment:
   - ASPNETCORE_ENVIRONMENT=Development
   - ASPNETCORE_URLS=http://+:8080
-  - Soap__Endpoint=http://host.docker.internal:8080/ws
+  - Soap__Endpoint=http://host.docker.internal:8085/ws
   - Minio__Endpoint=http://host.docker.internal:9000
   - Minio__AccessKey=minioadmin
   - Minio__SecretKey=minioadmin

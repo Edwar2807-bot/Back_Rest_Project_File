@@ -11,7 +11,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
-      - Soap__Endpoint=http://host.docker.internal:8080/ws
+      - Soap__Endpoint=http://host.docker.internal:8085/ws
       - Minio__Endpoint=http://host.docker.internal:9000
       - Minio__AccessKey=minioadmin
       - Minio__SecretKey=minioadmin
@@ -35,7 +35,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
-      - Soap__Endpoint=http://host.docker.internal:8080/ws
+      - Soap__Endpoint=http://host.docker.internal:8085/ws
       - Minio__Endpoint=http://host.docker.internal:9000
       - Minio__AccessKey=minioadmin
       - Minio__SecretKey=minioadmin
