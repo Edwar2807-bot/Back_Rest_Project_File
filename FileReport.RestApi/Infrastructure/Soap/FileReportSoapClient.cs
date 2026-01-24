@@ -214,6 +214,17 @@ namespace FileReport.RestApi.Infrastructure.Soap
                     }
 
                     // processedAt (DateTime + Specified)
+                    var createdVal = GetVal("createdAt");
+                    if (!IsNil("createdAt") && !string.IsNullOrEmpty(createdVal) && DateTime.TryParse(createdVal, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out var cd))
+                    {
+                        f.createdAt = cd;
+                        f.createdAtSpecified = true;
+                    }
+                    else
+                    {
+                        f.createdAtSpecified = false;
+                    }
+
                     var processedVal = GetVal("processedAt");
                     if (!IsNil("processedAt") && !string.IsNullOrEmpty(processedVal) && DateTime.TryParse(processedVal, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out var pd))
                     {
@@ -359,6 +370,17 @@ namespace FileReport.RestApi.Infrastructure.Soap
                 }
 
                 // processedAt (DateTime + Specified)
+                var createdVal = GetVal("createdAt");
+                if (!IsNil("createdAt") && !string.IsNullOrEmpty(createdVal) && DateTime.TryParse(createdVal, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out var cd))
+                {
+                    f.createdAt = cd;
+                    f.createdAtSpecified = true;
+                }
+                else
+                {
+                    f.createdAtSpecified = false;
+                }
+
                 var processedVal = GetVal("processedAt");
                 if (!IsNil("processedAt") && !string.IsNullOrEmpty(processedVal) && DateTime.TryParse(processedVal, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out var pd))
                 {

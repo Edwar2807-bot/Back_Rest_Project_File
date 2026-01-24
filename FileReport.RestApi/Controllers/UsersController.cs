@@ -16,7 +16,7 @@ namespace FileReport.RestApi.Controllers
             _service = service;
         }
 
-        [HttpGet("{userId}/files")]
+        [HttpGet("{userId}/fileInfo")]
         public async Task<IActionResult> GetFilesByUser(string userId)
             => Ok(await _service.GetFilesByUserAsync(userId));
     }

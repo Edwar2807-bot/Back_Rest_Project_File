@@ -58,7 +58,7 @@ namespace FileReport.RestApi.Application.Services
             var objectPath = encrypted
                 ? $"encrypted/{file.uuid}.enc"
                 : (string.IsNullOrWhiteSpace(file.urlFile)
-                    ? $"original/{file.uuid}.bin"
+                    ? BuildOriginalObjectPath(file)
                     : file.urlFile);
 
             var url = await _minioService.GeneratePresignedDownloadUrlAsync(objectPath);
@@ -97,6 +97,7 @@ namespace FileReport.RestApi.Application.Services
                 EncryptionAlgorithm = file.encryptionAlgorithm,
                 Sha256Original = file.sha256Original,
                 Sha256Decrypted = file.sha256Decrypted,
+                CreatedAt = file.createdAtSpecified ? file.createdAt : null,
                 ProcessedAt = file.processedAtSpecified ? file.processedAt : null,
 
                 // Criptografía / storage
@@ -108,6 +109,16 @@ namespace FileReport.RestApi.Application.Services
                 Error = file.error,
                 ErrorMessage = file.errorMessage
             };
+
+        private static string BuildOriginalObjectPath(FileReportDto file)
+        {
+            // Usa el nombre original si existe; si no, cae a fileName y finalmente al uuid.
+            // Path.GetFileName evita rutas con directorios si el backend lo enviara así.
+            var safeName = Path.GetFileName(
+                file.originalName ?? file.fileName ?? file.uuid);
+
+            return $"original/{file.uuid}/{safeName}";
+        }
 
     }
 }

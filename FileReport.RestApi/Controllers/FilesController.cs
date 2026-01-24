@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FileReport.RestApi.Controllers
 {
     [ApiController]
-    [Route("api/v1/files")]
+    [Route("api/v1/fileInfo")]
     [Authorize]
     public class FilesController : ControllerBase
     {

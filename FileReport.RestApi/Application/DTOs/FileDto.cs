@@ -24,6 +24,7 @@
         public string? EncryptionAlgorithm { get; set; }
         public string? Sha256Original { get; set; }
         public string? Sha256Decrypted { get; set; }
+        public DateTime? CreatedAt { get; set; }
         public DateTime? ProcessedAt { get; set; }
 
         // ===== Criptografía =====

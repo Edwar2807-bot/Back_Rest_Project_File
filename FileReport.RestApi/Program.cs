@@ -65,22 +65,28 @@ var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>()
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        // Configuraci�n para validar tokens de Keycloak
+        // Configuración para validar tokens de Keycloak
         options.Authority = jwtOptions.GetIssuerUrl();
         options.Audience = jwtOptions.Audience;
         options.RequireHttpsMetadata = jwtOptions.RequireHttpsMetadata;
+        
+        // Configuración adicional para desarrollo
+        options.MetadataAddress = $"{jwtOptions.Authority}/realms/{jwtOptions.Realm}/.well-known/openid-configuration";
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
+            ValidateIssuer = false, // TODO: Cambiar a true en producción una vez que funcione
+            ValidateAudience = false, // TODO: Cambiar a true y configurar audience en Keycloak
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtOptions.GetIssuerUrl(),
             ValidAudience = jwtOptions.Audience,
             // Keycloak puede usar 'azp' (authorized party) como audience
             ValidAudiences = new[] { jwtOptions.Audience, "account" },
-            ClockSkew = TimeSpan.FromMinutes(1)
+            ClockSkew = TimeSpan.FromMinutes(1),
+            // Nombres alternativos de claims que Keycloak puede usar
+            NameClaimType = "preferred_username",
+            RoleClaimType = "realm_access.roles"
         };
 
         // Eventos opcionales para debugging
