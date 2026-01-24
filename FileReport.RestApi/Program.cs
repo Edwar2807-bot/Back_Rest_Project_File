@@ -7,7 +7,6 @@ using FileReport.RestApi.Infrastructure.Errors;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,24 +57,50 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // =======================
-// Authentication (JWT)
+// Authentication (JWT - Keycloak)
 // =======================
-var jwtSection = builder.Configuration.GetSection("Jwt");
-var signingKey = jwtSection.GetValue<string>("SigningKey");
+var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>()
+    ?? throw new InvalidOperationException("JWT configuration is missing");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        // Configuración para validar tokens de Keycloak
+        options.Authority = jwtOptions.GetIssuerUrl();
+        options.Audience = jwtOptions.Audience;
+        options.RequireHttpsMetadata = jwtOptions.RequireHttpsMetadata;
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSection["Issuer"],
-            ValidAudience = jwtSection["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(signingKey!))
+            ValidIssuer = jwtOptions.GetIssuerUrl(),
+            ValidAudience = jwtOptions.Audience,
+            // Keycloak puede usar 'azp' (authorized party) como audience
+            ValidAudiences = new[] { jwtOptions.Audience, "account" },
+            ClockSkew = TimeSpan.FromMinutes(1)
+        };
+
+        // Eventos opcionales para debugging
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                var logger = context.HttpContext.RequestServices
+                    .GetRequiredService<ILogger<Program>>();
+                logger.LogError(context.Exception, "Authentication failed");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                var logger = context.HttpContext.RequestServices
+                    .GetRequiredService<ILogger<Program>>();
+                logger.LogInformation("Token validated for user: {User}",
+                    context.Principal?.Identity?.Name);
+                return Task.CompletedTask;
+            }
         };
     });
 
