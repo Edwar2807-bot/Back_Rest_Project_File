@@ -19,7 +19,8 @@ namespace FileReport.RestApi.Infrastructure.Minio
                 throw new ArgumentException("fileUrl cannot be empty", nameof(fileUrl));
 
             var minioSection = _configuration.GetSection("Minio");
-            var endpoint = minioSection.GetValue<string>("Endpoint")
+            var endpoint = minioSection.GetValue<string>("PublicEndpoint")
+                ?? minioSection.GetValue<string>("Endpoint")
                 ?? throw new InvalidOperationException("Minio:Endpoint is not configured");
             var accessKey = minioSection.GetValue<string>("AccessKey")
                 ?? throw new InvalidOperationException("Minio:AccessKey is not configured");
@@ -57,18 +58,27 @@ namespace FileReport.RestApi.Infrastructure.Minio
 
         private static string ResolveObjectName(string fileUrl, string bucket)
         {
-            if (Uri.TryCreate(fileUrl, UriKind.Absolute, out var uri))
+            // Normaliza rutas tanto absolutas como relativas y elimina prefijos redundantes de bucket.
+            string Normalize(string path)
             {
-                var path = uri.AbsolutePath.TrimStart('/');
-                var segments = path.Split('/', 2);
+                var trimmed = path.TrimStart('/');
 
-                if (segments.Length > 1 && segments[0].Equals(bucket, StringComparison.OrdinalIgnoreCase))
-                    return segments[1];
+                // Quita el bucket si viene repetido (ej: "file-pipeline/..." o "bucket/...").
+                if (trimmed.StartsWith(bucket + "/", StringComparison.OrdinalIgnoreCase))
+                    return trimmed.Substring(bucket.Length + 1);
 
-                return path;
+                if (trimmed.StartsWith("bucket/", StringComparison.OrdinalIgnoreCase))
+                    return trimmed.Substring("bucket/".Length);
+
+                return trimmed;
             }
 
-            return fileUrl.TrimStart('/');
+            if (Uri.TryCreate(fileUrl, UriKind.Absolute, out var uri))
+            {
+                return Normalize(uri.AbsolutePath);
+            }
+
+            return Normalize(fileUrl);
         }
     }
 }

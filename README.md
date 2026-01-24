@@ -22,20 +22,16 @@ API REST en .NET 8 para exponer reportes de archivos consumiendo un backend SOAP
 Archivo `appsettings.json` (ejemplo mínimo):
 ```json
 {
-  "Jwt": {
-    "Issuer": "file-report",
-    "Audience": "file-report-clients",
-    "SigningKey": "clave-secreta-minima"
-  },
   "Soap": {
     "Endpoint": "http://localhost:8085/ws"
   },
   "Minio": {
     "Endpoint": "http://localhost:9000",
-    "AccessKey": "minio",
-    "SecretKey": "minio123",
-    "Bucket": "reports",
-    "PresignExpirySeconds": 3600
+    "PublicEndpoint": "http://localhost:9000",
+    "AccessKey": "minioadmin",
+    "SecretKey": "minioadmin",
+    "Bucket": "bucket",
+    "PresignExpirySeconds": 120
   }
 }
 ```
@@ -55,47 +51,56 @@ JWT Bearer con **Keycloak** como Identity Provider. Incluir `Authorization: Bear
 ## Endpoints
 Base: `/api/v1`
 
-- `GET /files/{fileId}`
+| `GET /fileInfo/{fileId}`
   - Devuelve metadatos del archivo por UUID (SOAP: GetFileByUuid).
 
-- `GET /files/search?fileName={name}`
+| `GET /fileInfo/search?fileName={name}`
   - Busca archivos por nombre (SOAP: SearchFilesByName).
 
-- `GET /files?page=1`
+| `GET /fileInfo?page=1`
   - Lista paginada (SOAP: ListAllFilesPaginated).
 
-- `GET /users/{userId}/files` *(si existe UsersController en tu rama)*
+| `GET /users/{userId}/fileInfo`
   - Lista archivos por usuario (SOAP: ListFilesByUser).
 
-- `POST /files/{fileId}/download/original`
-  - Genera URL de descarga presignada desde MinIO (no encripta).
+| `POST /fileInfo/{fileId}/download/original`
+  - Genera URL de descarga presignada desde MinIO (usa nombre original si no viene `urlFile`).
 
-- `POST /files/{fileId}/download/encrypted`
+| `POST /fileInfo/{fileId}/download/encrypted`
   - Genera URL de descarga presignada (versión encriptada si aplica).
+
+| `POST /debug/decode-token`
+  - Decodifica un JWT sin validar firma (solo diagnóstico, público).
+
+| `GET /debug/test-auth`
+  - Verifica autenticación y muestra claims (requiere bearer token).
+
+| `GET /debug/keycloak-health`
+  - Verifica accesibilidad de realm y JWKS de Keycloak (público).
 
 ## Ejemplos (curl)
 
 ### Obtener archivo por UUID
 ```bash
-curl -X GET "https://localhost:44371/api/v1/files/696dbf10-eff8-11f0-898a-f60de9c2931f" \
+curl -X GET "https://localhost:44371/api/v1/fileInfo/696dbf10-eff8-11f0-898a-f60de9c2931f" \
   -H "Authorization: Bearer <token>"
 ```
 
 ### Buscar por nombre
 ```bash
-curl -X GET "https://localhost:44371/api/v1/files/search?fileName=documento" \
+curl -X GET "https://localhost:44371/api/v1/fileInfo/search?fileName=documento" \
   -H "Authorization: Bearer <token>"
 ```
 
 ### Lista paginada
 ```bash
-curl -X GET "https://localhost:44371/api/v1/files?page=1" \
+curl -X GET "https://localhost:44371/api/v1/fileInfo?page=1" \
   -H "Authorization: Bearer <token>"
 ```
 
 ### Presignado de descarga
 ```bash
-curl -X POST "https://localhost:44371/api/v1/files/696dbf10-eff8-11f0-898a-f60de9c2931f/download/original" \
+curl -X POST "https://localhost:44371/api/v1/fileInfo/696dbf10-eff8-11f0-898a-f60de9c2931f/download/original" \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -157,9 +162,10 @@ environment:
   - ASPNETCORE_URLS=http://+:8080
   - Soap__Endpoint=http://host.docker.internal:8085/ws
   - Minio__Endpoint=http://host.docker.internal:9000
+  - Minio__PublicEndpoint=http://localhost:9000
   - Minio__AccessKey=minioadmin
   - Minio__SecretKey=minioadmin
-  - Minio__Bucket=file-pipeline
+  - Minio__Bucket=bucket
   - Minio__PresignExpirySeconds=120
   - Jwt__Authority=http://host.docker.internal:8080
   - Jwt__Realm=proyecto-realm
@@ -245,7 +251,7 @@ curl -X POST "http://localhost:8080/realms/proyecto-realm/protocol/openid-connec
 
 ```bash
 # Ejemplo de petición autenticada
-curl -X GET "http://localhost:8086/api/v1/files?page=1" \
+curl -X GET "http://localhost:8086/api/v1/fileInfo?page=1" \
   -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
