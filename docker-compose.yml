@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  filereport-api-1:
+    build:
+      context: .
+      dockerfile: FileReport.RestApi/Dockerfile
+    container_name: filereport-api-8085
+    ports:
+      - "8085:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - Soap__Endpoint=http://host.docker.internal:8080/ws
+      - Minio__Endpoint=http://host.docker.internal:9000
+      - Minio__AccessKey=minioadmin
+      - Minio__SecretKey=minioadmin
+      - Minio__Bucket=file-pipeline
+      - Minio__PresignExpirySeconds=120
+      - Jwt__Authority=http://host.docker.internal:8080
+      - Jwt__Realm=proyecto-realm
+      - Jwt__Audience=backend-client
+      - Jwt__RequireHttpsMetadata=false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  filereport-api-2:
+    build:
+      context: .
+      dockerfile: FileReport.RestApi/Dockerfile
+    container_name: filereport-api-8086
+    ports:
+      - "8086:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - Soap__Endpoint=http://host.docker.internal:8080/ws
+      - Minio__Endpoint=http://host.docker.internal:9000
+      - Minio__AccessKey=minioadmin
+      - Minio__SecretKey=minioadmin
+      - Minio__Bucket=file-pipeline
+      - Minio__PresignExpirySeconds=120
+      - Jwt__Authority=http://host.docker.internal:8080
+      - Jwt__Realm=proyecto-realm
+      - Jwt__Audience=backend-client
+      - Jwt__RequireHttpsMetadata=false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
